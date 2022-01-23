@@ -2,12 +2,18 @@ import path from 'path'
 import { Configuration as WebpackConfiguration } from 'webpack'
 import { Configuration as WebpackDevServerConfiguration } from 'webpack-dev-server'
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin'
+import Dotenv from 'dotenv-webpack'
+import process from "process";
+
 
 interface Configuration extends WebpackConfiguration {
     devServer?: WebpackDevServerConfiguration;
 }
 
+const env = process.env.NODE_ENV
+
 const config: Configuration = {
+
     entry: "./src/index.tsx",
     module: {
         rules: [
@@ -45,6 +51,9 @@ const config: Configuration = {
     },
     resolve: {
         extensions: [".tsx", ".ts", ".js"],
+        fallback: {
+            "process": require.resolve("process/browser")
+        }
     },
     output: {
         path: path.resolve(__dirname, "build"),
@@ -60,8 +69,15 @@ const config: Configuration = {
         async: false,
         eslint: {
             files: "./src/**/*",
+            options: {
+                quiet: true
+            }
         },
     }),
+        new Dotenv({
+            path: path.resolve(__dirname, `.env.${env}`),
+            ignoreStub: true
+        }),
     ],
 };
 

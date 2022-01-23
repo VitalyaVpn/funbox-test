@@ -2,11 +2,18 @@ import * as React from 'react'
 import { isLatLngLiteral } from '@googlemaps/typescript-guards'
 import { createCustomEqual } from 'fast-equals'
 import {Status, Wrapper} from "@googlemaps/react-wrapper"
+import Marker from "./Marker";
+import {useAppDispatch, useAppSelector} from "../hooks/redux";
+import {mapSlice} from "../store/reducers/MapSlice";
+import * as process from "process";
+
+const API_KEY = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_API_KEY as string: process.env.REACT_APP_API_KEY as string
 
 interface MapProps extends google.maps.MapOptions {
     style: { [key: string]: string }
     onClick?: (e: google.maps.MapMouseEvent) => void
     onIdle?: (map: google.maps.Map) => void
+    onZoomChanged?: (map: google.maps.Map) => void
     className: string
 }
 
@@ -14,43 +21,44 @@ const render = (status: Status) => {
     return <h1>{status}</h1>
 }
 
+
+
 const MapWrapper = () => {
+    const dispatch = useAppDispatch()
+    const {markers, center, zoom }= useAppSelector(state => state.mapReducer)
+    const {setCenter, setZoom} = mapSlice.actions
 
-    const [clicks, setClicks] = React.useState<google.maps.LatLng[]>([])
-    const [zoom, setZoom] = React.useState(3); // initial zoom
-    const [center, setCenter] = React.useState<google.maps.LatLngLiteral>({
-        lat: 0,
-        lng: 0,
-    });
+    console.log(zoom)
 
-    const onClick = (e: google.maps.MapMouseEvent) => {
-        // avoid directly mutating state
-
-        setClicks([...clicks, e.latLng!])
-    };
 
     const onIdle = (m: google.maps.Map) => {
-        console.log("onIdle")
-        setZoom(m.getZoom()!)
-        setCenter(m.getCenter()!.toJSON())
-    };
+        const newZoom = m.getZoom()!
+
+        if (zoom !== newZoom){
+            dispatch(setZoom(newZoom))
+        }
+        const newCenter = m.getCenter()!.toJSON()
+        if(center.lat !== newCenter.lat && center.lng !== newCenter.lng) {
+            dispatch(setCenter(newCenter))
+        }
+    }
 
     return (
         <Wrapper
-            apiKey={'AIzaSyDa4BpwnZXuiAXmnIOIJQe4kE3xtnTyW3k'}
+            apiKey={API_KEY}
             render={render}
         >
             <Map
                 className='map-container'
                 center={center}
-                onClick={onClick}
                 onIdle={onIdle}
                 zoom={zoom}
                 style={{ flexGrow: "1", height: "100%" }}
             >
-                {clicks.map((latLng, i) => (
-                    <Marker key={i} position={latLng} />
+                {markers[0] && markers.map((marker) => (
+                    <Marker key={marker.id} position={marker.position} title={marker.name}/>
                 ))}
+
             </Map>
         </Wrapper>
     )
@@ -66,6 +74,9 @@ const Map:React.FC<MapProps> = ({
 
     const ref = React.useRef<HTMLDivElement>(null)
     const [map, setMap] = React.useState<google.maps.Map>()
+
+    const {routes, markers}= useAppSelector(state => state.mapReducer)
+
 
     React.useEffect(() => {
         if (ref.current && !map) {
@@ -83,19 +94,39 @@ const Map:React.FC<MapProps> = ({
     // [START maps_react_map_component_event_hooks]
     React.useEffect(() => {
         if (map) {
-            ["click", "idle"].forEach((eventName) =>
+            ['click', 'idle', 'zoomChanged'].forEach((eventName) =>
                 google.maps.event.clearListeners(map, eventName)
-            );
+            )
 
             if (onClick) {
                 map.addListener("click", onClick)
             }
-
             if (onIdle) {
-                map.addListener("idle", () => onIdle(map))
+                google.maps.event.addListener(map, 'idle', () => onIdle(map))
+               // map.addListener("idle", () => onIdle(map))
             }
         }
     }, [map, onClick, onIdle]);
+
+    React.useEffect(()=>{
+        const flightPath = new google.maps.Polyline({
+            path: routes,
+            geodesic: false,
+            strokeColor: "#FF0000",
+            strokeOpacity: 1.0,
+            strokeWeight: 2,
+        })
+
+        if(map) {
+            flightPath.setMap(map)
+
+        }
+        return () => {
+            flightPath.setMap(null)
+        }
+
+    }, [routes, markers, map])
+
 
     return (
 
@@ -109,36 +140,28 @@ const Map:React.FC<MapProps> = ({
                     return React.cloneElement(child, { map });
                 }
             })}
-
-
         </div>
 
     )
 }
 
-const Marker: React.FC<google.maps.MarkerOptions> = (options) => {
-    const [marker, setMarker] = React.useState<google.maps.Marker>()
-    React.useEffect(() => {
-        if (!marker) {
-            setMarker(new google.maps.Marker())
-        }
+// function calcRoute(directionsService: google.maps.DirectionsService, directionsRenderer: google.maps.DirectionsRenderer, route: IRoute) {
+//     console.log('here')
+//     const request = {
+//         origin: route.origin,
+//         destination: route.dest,
+//         travelMode: google.maps.TravelMode.DRIVING
+//     };
+//     directionsService.route(request, function(result, status) {
+//         if (status == "OK") {
+//             directionsRenderer.setDirections(result);
+//         }
+//         else {
+//             console.log("Directions request failed due to " + status)
+//         }
+//     });
+// }
 
-        // remove marker from map on unmount
-        return () => {
-            if (marker) {
-                marker.setMap(null)
-            }
-        };
-    }, [marker])
-
-    React.useEffect(() => {
-        if (marker) {
-            marker.setOptions(options)
-        }
-    }, [marker, options])
-
-    return null
-}
 
 const deepCompareEqualsForMaps = createCustomEqual(
     (deepEqual) => (a: any, b: any) => {
