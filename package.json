@@ -23,6 +23,8 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-redux": "^7.2.6",
+    "react-responsive": "^9.0.0-beta.6",
+    "react-sortable-hoc": "^2.0.0",
     "reactstrap": "^9.0.1",
     "redux-persist": "^6.0.0",
     "sass": "^1.49.0"
@@ -41,6 +43,7 @@
     "@types/react": "^17.0.38",
     "@types/react-dom": "^17.0.11",
     "@types/react-redux": "^7.1.22",
+    "@types/react-sortable-hoc": "^0.7.1",
     "@types/webpack": "^5.28.0",
     "@types/webpack-dev-server": "^4.7.2",
     "@typescript-eslint/eslint-plugin": "^5.10.0",

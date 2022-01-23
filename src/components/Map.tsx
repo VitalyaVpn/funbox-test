@@ -21,16 +21,11 @@ const render = (status: Status) => {
     return <h1>{status}</h1>
 }
 
-
-
 const MapWrapper = () => {
     const dispatch = useAppDispatch()
     const {markers, center, zoom }= useAppSelector(state => state.mapReducer)
     const {setCenter, setZoom} = mapSlice.actions
-
-    console.log(zoom)
-
-
+   // console.log(markers)
     const onIdle = (m: google.maps.Map) => {
         const newZoom = m.getZoom()!
 
@@ -56,7 +51,14 @@ const MapWrapper = () => {
                 style={{ flexGrow: "1", height: "100%" }}
             >
                 {markers[0] && markers.map((marker) => (
-                    <Marker key={marker.id} position={marker.position} title={marker.name}/>
+                    <Marker
+                        key={marker.id}
+                        position={marker.position}
+                        title={marker.name}
+                        draggable
+                        label={(marker.id+1).toString()}
+                        //animation={google.maps.Animation.DROP}
+                    />
                 ))}
 
             </Map>
@@ -99,7 +101,7 @@ const Map:React.FC<MapProps> = ({
             )
 
             if (onClick) {
-                map.addListener("click", onClick)
+                google.maps.event.addListener(map, 'click', onClick)
             }
             if (onIdle) {
                 google.maps.event.addListener(map, 'idle', () => onIdle(map))
