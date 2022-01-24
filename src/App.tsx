@@ -1,13 +1,9 @@
 import * as React from 'react'
-import List from './components/List'
-import Map from "./components/Map";
+import Main from "./pages/Main";
 
 const App:React.FC = () => {
     return (
-        <div>
-            <List />
-            <Map />
-        </div>
+        <Main />
     )
 }
 
