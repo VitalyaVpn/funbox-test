@@ -11,6 +11,7 @@ Installation and usage
 
 ```
 git clone https://github.com/VitalyaVpn/funbox-test.git
+yarn install
 yarn start - to start dev server
 yarn build - to make production build
 yarn test - to run tests
