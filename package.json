@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "webpack serve --open --mode development  --node-env development",
-    "build": "webpack --mode production --node-env production"
+    "build": "webpack --mode production --node-env production",
+    "test": "jest",
+    "test:watch": "npm test -- --watch"
   },
   "keywords": [
     "react",
@@ -37,9 +39,12 @@
     "@babel/preset-typescript": "^7.16.7",
     "@babel/runtime": "^7.16.7",
     "@googlemaps/typescript-guards": "^1.0.4",
+    "@testing-library/jest-dom": "^5.16.1",
+    "@testing-library/react": "^12.1.2",
     "@types/dotenv-webpack": "^7.0.3",
     "@types/fork-ts-checker-webpack-plugin": "^0.4.5",
     "@types/googlemaps": "^3.43.3",
+    "@types/jest": "^27.4.0",
     "@types/react": "^17.0.38",
     "@types/react-dom": "^17.0.11",
     "@types/react-redux": "^7.1.22",
@@ -48,6 +53,7 @@
     "@types/webpack-dev-server": "^4.7.2",
     "@typescript-eslint/eslint-plugin": "^5.10.0",
     "@typescript-eslint/parser": "^5.10.0",
+    "babel-jest": "^27.4.6",
     "babel-loader": "^8.2.3",
     "css-loader": "^6.5.1",
     "dotenv-webpack": "^7.0.3",
@@ -55,6 +61,7 @@
     "eslint-plugin-react": "^7.28.0",
     "eslint-plugin-react-hooks": "^4.3.0",
     "fork-ts-checker-webpack-plugin": "^6.5.0",
+    "jest": "^27.4.7",
     "sass-loader": "^12.4.0",
     "style-loader": "^3.3.1",
     "ts-loader": "^9.2.6",

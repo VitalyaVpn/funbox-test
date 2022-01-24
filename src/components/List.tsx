@@ -44,7 +44,7 @@ const List:React.FC = () => {
     const dispatch = useAppDispatch()
     const {markers, center} = useAppSelector(state => state.mapReducer)
     const isMobile = useMediaQuery({ query: '(max-width: 767px)' })
-    const {addMarker, setRoutes, clearMarkers, deleteMarker, dragList} = mapSlice.actions
+    const {addMarker, setRoutes, deleteMarker, dragList} = mapSlice.actions
     // React.useEffect(()=> {
     //     dispatch(clearMarkers())
     // }, [])
@@ -61,6 +61,7 @@ const List:React.FC = () => {
     return (
         <div className='list-container'>
             <Form
+                role = 'form'
                 inline
                 className='list-container__form'
                 onSubmit={formik.handleSubmit}
