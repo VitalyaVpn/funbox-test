@@ -16,6 +16,21 @@ yarn start - to start dev server
 yarn build - to make production build
 yarn test - to run tests
 ```
++ App requires Google Maps API key.
+  + Go to the Google Maps Platform > [Credentials page](https://console.cloud.google.com/project/_/google/maps-apis/credentials?hl=ru).
+  
+  + On the Credentials page, click Create credentials > API key.
+The API key created dialog displays your newly created API key.
+
+  + Click Close.
+The new API key is listed on the Credentials page under API keys.
+  + Copy API key.
+  + Put it in the `.env.development` for dev build or `.env.production` for production build. See example
+  + ```
+    REACT_APP_API_KEY = YOUR_API_KEY
+    ```
+
+
 
 Example page
 ------------
